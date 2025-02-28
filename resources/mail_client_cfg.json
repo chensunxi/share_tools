@@ -1,0 +1,13 @@
+{
+    "server_host": "10.18.88.80",
+    "server_port": "5000",
+    "server_protocol": "http",
+    "business_types": [
+        "数金总部",
+        "长亮金服",
+        "长亮合度",
+        "长亮科技",
+        "长亮控股",
+        "数据总部"
+    ]
+}

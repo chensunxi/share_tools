@@ -1,0 +1,37 @@
+{
+    "recv_monitor_mail": [
+        {
+            "email": "chensx@sunline.cn",
+            "erppwd": "gAAAAABnvWDcztsKwSVMuIFz8AMNVUfbg59anQIjpXQqGmlgLOgVdYwlrbrXYbJYTFlvJwc6-tSNxnq4YBdofWzUCn612hj_Og==",
+            "erpuser": "leiguolin",
+            "password": "gAAAAABnvWDclHGLuYRG1xzFDcxSTmRliTkkhjPGSmMDuOGTbuMJIZD_rCMduGGwMJjOSLIscld78hj8q46YB3_KPCjnJz7BGnVhlYkWf0bF8ud9PExMn98="
+        }
+    ],
+    "send_copy_mail": [
+        {
+            "business": "数金总部",
+            "name": "张三",
+            "email": "chensunxi@163.com"
+        },
+        {
+            "business": "长亮科技",
+            "name": "王五",
+            "email": "chensx@sunline.cn"
+        },
+        {
+            "business": "长亮金服",
+            "name": "吴春景",
+            "email": "wuchunjing@sunline.cn"
+        }
+    ],
+    "auth_enter_mail": [
+        {
+            "business": "长亮金服",
+            "name": "李四",
+            "email": "chensunxi@qq.com"
+        }
+    ],
+    "keywords": "入场资料",
+    "auto_reply_text": "您好！\n所需资料已通过附件打包回传，具体资料明细如下：\n{$table}\n    如有缺失资料，共享负责同事稍后会以邮件方式提供缺失资料！\n如有疑问，请联系共享负责同事：{$manager}, 谢谢！\n\n\n共享服务中心",
+    "monitor_status": "running"
+}
