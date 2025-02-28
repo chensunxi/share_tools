@@ -1,0 +1,20 @@
+# 忽略 .idea 目录
+.idea/
+
+# 忽略 __pycache__ 目录
+__pycache__/
+
+# 忽略 download 目录
+download/
+
+# 忽略 logs 目录
+logs/
+
+# 忽略 output 目录
+output/
+
+# 忽略 test 目录
+test/
+
+# 忽略 logs 目录
+test/
