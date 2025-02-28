@@ -26,6 +26,12 @@ jobs:
 
       - name: Build macOS executable
         run: |
+          # 卸载全局 pathlib（仅在 macOS 环境需要）
+          /Library/Frameworks/Python.framework/Versions/3.11/bin/python -m pip uninstall pathlib -y
+
+          # 创建虚拟环境
+          python -m venv venv
+          source venv/bin/activate
           pyinstaller --onefile --name myapp share_main.py
 
       - name: Upload artifact
