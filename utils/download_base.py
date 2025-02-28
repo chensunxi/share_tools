@@ -22,6 +22,10 @@ from watchdog.observers import Observer
 import tkinter.messagebox as messagebox
 from utils.logger_utils import LoggerUtils
 from utils.common_utils import extract_chinese
+from chromedriver_autoinstaller import install as install_chromedriver
+
+# 自动安装或更新 ChromeDriver
+install_chromedriver()
 
 class SharedState:
     def __init__(self):
