@@ -3,8 +3,6 @@ name: Build macOS Executable
 on:
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: "main"
 
 jobs:
   build:
@@ -13,50 +11,37 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Python
+      - name: Set up Python 3.11
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
-      - name: Install dependencies
+      - name: Clean environment
         run: |
-          # 全局升级 pip（可选）
-          python -m pip install --upgrade pip
+          rm -rf venv/
 
-      - name: Build macOS executable
+      - name: Build executable
+        env:
+          ARCHFLAGS: "-arch x86_64 -arch arm64"  # 强制多架构编译
         run: |
-          # 创建并激活虚拟环境
+          # 创建虚拟环境
           python -m venv venv
           source venv/bin/activate
 
-          # 第一步：安装 PyInstaller 前强制卸载 pathlib
-          pip uninstall -y pathlib || true
+          # 安装基础工具链
+          pip install --upgrade pip setuptools wheel
 
-          # 安装 PyInstaller（固定版本）
-          pip install pyinstaller==6.1.0
+          # 从源码安装关键依赖
+          pip install pandas --no-binary pandas,numpy
+          pip install selenium --no-binary selenium
+          pip install -r requirements.txt --no-binary=:all:
 
-          # 第二步：安装项目依赖前再次卸载 pathlib
-          pip uninstall -y pathlib || true
-
-          # 安装项目依赖（忽略所有依赖的依赖）
-          pip install --no-deps -r requirements.txt
-
-          # 第三步：验证 pathlib 是否残留
-          if pip list | grep pathlib; then
-            echo "Error: pathlib 未完全卸载，终止构建！"
-            exit 1
-          fi
-          # 删除现有二进制版本
-          pip uninstall tomli -y
-
-          # 从源码安装并强制兼容架构
-          ARCHFLAGS="-arch x86_64 -arch arm64"
-          pip install tomli --no-binary=:all:          
-          export ARCHFLAGS="-arch x86_64 -arch arm64"
-          # 构建命令
-          pyinstaller --onefile --name myapp \
+          # 执行 PyInstaller（完整命令）
+          pyinstaller \
+            --onefile \
+            --name myapp \
             --target-architecture=universal2 \
-            --hidden-import selenium \
+            --hidden-import=selenium \
             --hidden-import=platform \
             --hidden-import=certifi \
             --hidden-import=urllib3 \
@@ -66,26 +51,24 @@ jobs:
             --hidden-import=websocket \
             --hidden-import=xml.dom \
             --hidden-import=pandas \
+            --hidden-import=pandas._libs.writers \
+            --hidden-import=logging.handlers \
+            --hidden-import=tkinter \
+            --hidden-import=tkinter.filedialog \
+            --collect-data=tkinter \
             --add-data "venv/lib/python3.11/site-packages/selenium:selenium" \
             --add-binary "venv/lib/python3.11/site-packages/selenium/webdriver/common/:selenium/webdriver/common" \
-            --hidden-import logging.handlers \
-            --hidden-import tkinter \
-            --hidden-import tkinter.filedialog \
-            --collect-data tkinter \
             --add-data "social_download:social_download" \
             --add-data "utils:utils" \
             --add-data "gui:gui" \
             --add-data "bidding_docx:bidding_docx" \
             --add-data "social_desensitize:social_desensitize" \
             --add-data "resources:resources" \
+            --clean \
+            --noconfirm \
             share_main.py
 
-      - name: Verify binary architecture
+      - name: Verify binary
         run: |
-          lipo -info dist/myapp
-          
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: macos-app
-          path: dist/myapp
+          lipo -info dist/myapp  # 检查架构
+          file dist/myapp        # 验证文件类型
