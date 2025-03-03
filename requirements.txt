@@ -35,7 +35,7 @@ decorator==5.1.1
 defusedxml==0.7.1
 dnspython==2.7.0
 docxcompose==1.4.0
-docxtpl==0.19.1
+docxtpl==0.18.0
 Eel==0.17.0
 et_xmlfile==2.0.0
 etelemetry==0.3.1
