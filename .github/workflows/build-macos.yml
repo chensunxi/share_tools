@@ -1,4 +1,4 @@
-name: Build macOS Executable
+name: Build macOS Universal2 Executable
 
 on:
   push:
@@ -7,6 +7,9 @@ on:
 jobs:
   build:
     runs-on: macos-latest
+    strategy:
+      matrix:
+        arch: [x86_64, arm64]  # 分两个架构编译
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -20,27 +23,25 @@ jobs:
         run: |
           rm -rf venv/
 
-      - name: Build executable
+      - name: Build per-architecture
         env:
-          ARCHFLAGS: "-arch x86_64 -arch arm64"  # 强制多架构编译
+          ARCH: ${{ matrix.arch }}  # 当前架构
         run: |
           # 创建虚拟环境
-          python -m venv venv
-          source venv/bin/activate
+          python -m venv venv-$ARCH
+          source venv-$ARCH/bin/activate
 
-          # 安装基础工具链
+          # 安装依赖（单架构模式）
+          export ARCHFLAGS="-arch $ARCH"
           pip install --upgrade pip setuptools wheel
+          pip install pandas numpy --no-binary pandas,numpy  # 允许源码编译
+          pip install -r requirements.txt
 
-          # 从源码安装关键依赖
-          pip install pandas --no-binary pandas,numpy
-          pip install selenium --no-binary selenium
-          pip install -r requirements.txt --no-binary=:all:
-
-          # 执行 PyInstaller（完整命令）
+          # 构建单架构可执行文件（完整参数）
           pyinstaller \
             --onefile \
-            --name myapp \
-            --target-architecture=universal2 \
+            --name myapp-$ARCH \
+            --target-architecture=$ARCH \
             --hidden-import=selenium \
             --hidden-import=platform \
             --hidden-import=certifi \
@@ -56,8 +57,8 @@ jobs:
             --hidden-import=tkinter \
             --hidden-import=tkinter.filedialog \
             --collect-data=tkinter \
-            --add-data "venv/lib/python3.11/site-packages/selenium:selenium" \
-            --add-binary "venv/lib/python3.11/site-packages/selenium/webdriver/common/:selenium/webdriver/common" \
+            --add-data "venv-$ARCH/lib/python3.11/site-packages/selenium:selenium" \
+            --add-binary "venv-$ARCH/lib/python3.11/site-packages/selenium/webdriver/common/:selenium/webdriver/common" \
             --add-data "social_download:social_download" \
             --add-data "utils:utils" \
             --add-data "gui:gui" \
@@ -66,9 +67,24 @@ jobs:
             --add-data "resources:resources" \
             --clean \
             --noconfirm \
+            --distpath dist-$ARCH \
+            --workpath build-$ARCH \
             share_main.py
 
-      - name: Verify binary
+      - name: Merge universal binary
+        if: matrix.arch == 'x86_64'  # 仅在最后一个任务合并
         run: |
-          lipo -info dist/myapp  # 检查架构
-          file dist/myapp        # 验证文件类型
+          # 合并两个架构的二进制
+          lipo -create \
+            dist-x86_64/myapp-x86_64 \
+            dist-arm64/myapp-arm64 \
+            -output dist/myapp-universal
+
+          # 验证合并结果
+          lipo -info dist/myapp-universal
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-app-universal
+          path: dist/myapp-universal
