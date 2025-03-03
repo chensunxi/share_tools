@@ -145,13 +145,13 @@ class GuangzhouSocialSecurity(CrawlerDownloadBase):
 
             # 重命名下载的文件
             if file_type == "1":
-                new_file_name = f'{input_context['staff_name']}_{input_context['id_card']}_{self.city}_个人参保证明'
+                new_file_name = f"{input_context['staff_name']}_{input_context['id_card']}_{self.city}_个人参保证明"
                 source_dir = os.path.join(self.download_path, "参保证明")
                 if not os.path.exists(source_dir):
                     os.makedirs(source_dir)
                 new_file_path = os.path.join(source_dir, new_file_name)
             else:
-                new_file_name = f'{input_context['staff_name']}_{input_context['id_card']}_{self.city}_个人缴费明细'
+                new_file_name = f"{input_context['staff_name']}_{input_context['id_card']}_{self.city}_个人缴费明细"
                 source_dir = os.path.join(self.download_path, "缴费明细")
                 if not os.path.exists(source_dir):
                     os.makedirs(source_dir)
