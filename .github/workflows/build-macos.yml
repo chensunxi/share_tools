@@ -24,7 +24,7 @@ jobs:
         run: |
           # 使用预编译的二进制包（关键）
           python -m pip install --upgrade pip setuptools wheel
-          pip install -r requirements.txt  # 确保 requirements.txt 包含 numpy, pandas, selenium 等
+          pip install --no-cache-dir -r requirements.txt  # 确保 requirements.txt 包含 numpy, pandas, selenium 等
 
       - name: Build Universal2 executable
         run: |
