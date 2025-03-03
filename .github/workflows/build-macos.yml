@@ -20,15 +20,34 @@ jobs:
 
       - name: Install dependencies
         run: |
+          # 全局升级 pip（可选）
           python -m pip install --upgrade pip
-          pip install pyinstaller==6.1.0
-          pip install -r requirements.txt
 
       - name: Build macOS executable
         run: |
+          # 创建并激活虚拟环境
           python -m venv venv
           source venv/bin/activate
-          pip install -r requirements.txt
+
+          # 第一步：安装 PyInstaller 前强制卸载 pathlib
+          pip uninstall -y pathlib || true
+
+          # 安装 PyInstaller（固定版本）
+          pip install pyinstaller==6.1.0
+
+          # 第二步：安装项目依赖前再次卸载 pathlib
+          pip uninstall -y pathlib || true
+
+          # 安装项目依赖（忽略所有依赖的依赖）
+          pip install --no-deps -r requirements.txt
+
+          # 第三步：验证 pathlib 是否残留
+          if pip list | grep pathlib; then
+            echo "Error: pathlib 未完全卸载，终止构建！"
+            exit 1
+          fi
+
+          # 构建命令
           pyinstaller --onefile --name myapp \
             --hidden-import tkinter \
             --hidden-import tkinter.filedialog \
