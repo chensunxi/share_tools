@@ -165,7 +165,7 @@ class HangzhouSocialSecurity(CrawlerDownloadBase):
         self.click_custom((By.XPATH, '//span[text()="下载文件"]'))
         time.sleep(5)
         if download_flag == '1':
-            new_file_name = f'{download_user['staff_name']}_{download_user['id_card']}_{self.city}_个人参保证明'
+            new_file_name = f"{download_user['staff_name']}_{download_user['id_card']}_{self.city}_个人参保证明"
         else:    
             new_file_name = '杭州分公司_单位汇总参保证明'
         new_file_path = os.path.join(self.download_path, new_file_name)
