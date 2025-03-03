@@ -18,37 +18,21 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Install core tools
+      - name: Install dependencies
         run: |
-          # 全局升级 pip 和工具链（可选）
-          python -m pip install --upgrade pip setuptools wheel
+          python -m pip install --upgrade pip
+          pip install pyinstaller==6.1.0
+          pip install -r requirements.txt
 
       - name: Build macOS executable
         run: |
-          # 创建并激活虚拟环境
           python -m venv venv
           source venv/bin/activate
-
-          # 强制卸载 pathlib（即使不存在也忽略错误）
-          pip uninstall -y pathlib || true
-
-          # 安装 PyInstaller 和项目依赖（确保 requirements.txt 不含 pathlib）
-          pip install pyinstaller==6.1.0
-          pip install --no-deps -r requirements.txt  # 关键：忽略依赖中的 pathlib
-
-          # 再次检查 pathlib 是否残留
-          if pip list | grep pathlib; then
-            echo "Error: pathlib 未完全卸载，请检查 requirements.txt"
-            exit 1
-          fi
-
-          # 构建命令
+          pip install -r requirements.txt
           pyinstaller --onefile --name myapp \
-            --hidden-import social_download \
-            --hidden-import utils \
-            --hidden-import gui \
-            --hidden-import bidding_docx \
-            --hidden-import social_desensitize \
+            --hidden-import tkinter \
+            --hidden-import tkinter.filedialog \
+            --collect-data tkinter \
             --add-data "social_download:social_download" \
             --add-data "utils:utils" \
             --add-data "gui:gui" \
