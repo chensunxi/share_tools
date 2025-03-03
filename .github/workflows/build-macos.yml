@@ -46,10 +46,10 @@ jobs:
             echo "Error: pathlib 未完全卸载，终止构建！"
             exit 1
           fi
-
+          ARCHFLAGS="-arch x86_64 -arch arm64" \
           # 构建命令
           pyinstaller --onefile --name myapp \
-            --target-arch universal2 \
+            --target-architecture=universal2 \
             --hidden-import selenium \
             --hidden-import=platform \
             --hidden-import=certifi \
