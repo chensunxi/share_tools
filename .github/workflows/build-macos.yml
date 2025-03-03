@@ -32,7 +32,19 @@ jobs:
           # 创建虚拟环境
           python -m venv venv
           source venv/bin/activate
-          pyinstaller --onefile --name myapp share_main.py
+          pyinstaller --onefile --name myapp \\
+          --hidden-import social_download \\
+          --hidden-import utils \\
+          --hidden-import gui \\
+          --hidden-import bidding_docx \\
+          --hidden-import social_desensitize \\
+          --add-data "social_download:social_download" \\
+          --add-data "utils:utils" \\
+          --add-data "gui:gui" \\
+          --add-data "bidding_docx:bidding_docx" \\
+          --add-data "social_desensitize:social_desensitize" \\
+          --add-data "resources:resources" \\
+          share_main.py
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
