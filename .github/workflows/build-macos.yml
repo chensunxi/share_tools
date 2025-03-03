@@ -49,7 +49,7 @@ jobs:
 
           # 构建命令
           pyinstaller --onefile --name myapp \
-            --hidden-import logging.handlers \  # 修复 logging.handlers
+            --hidden-import logging.handlers \
             --hidden-import tkinter \
             --hidden-import tkinter.filedialog \
             --collect-data tkinter \
