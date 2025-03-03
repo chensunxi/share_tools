@@ -155,7 +155,7 @@ class NanjingSocialSecurity(CrawlerDownloadBase):
             self.click_custom((By.XPATH, '//button/span[text()="下载"]'), click_flag=False)
             time.sleep(3)
 
-            new_file_name = f'{input_context['staff_name']}_{input_context['id_card']}_{self.city}_个人参保证明'
+            new_file_name = f"{input_context['staff_name']}_{input_context['id_card']}_{self.city}_个人参保证明"
             new_file_path = os.path.join(self.download_path, new_file_name)
             self.rename_downfile(new_file_path)
 
