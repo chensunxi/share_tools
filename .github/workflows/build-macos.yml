@@ -54,6 +54,7 @@ jobs:
             --hidden-import=platform \
             --hidden-import=certifi \
             --hidden-import=urllib3 \
+            --hidden-import=sysconfig \
             --add-data "venv/lib/python3.11/site-packages/selenium:selenium" \
             --add-binary "venv/lib/python3.11/site-packages/selenium/webdriver/common/:selenium/webdriver/common" \
             --hidden-import logging.handlers \
