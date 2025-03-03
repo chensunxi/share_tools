@@ -83,7 +83,7 @@ outcome==1.3.0.post0
 packaging==24.1
 paddleocr==2.9.1
 paddlepaddle==2.6.2
-pandas==2.2.3
+pandas==2.2.3 --no-binary=pandas,numpy
 pdf2image==1.17.0
 pdfkit==1.0.0
 pdfminer.six==20231228
@@ -128,7 +128,7 @@ schedule==1.2.2
 scikit-image==0.25.0
 scikit-learn==1.6.0
 scipy==1.14.1
-selenium==4.26.1
+selenium==4.26.1 --no-binary=selenium
 setuptools==75.2.0
 shapely==2.0.6
 simplejson==3.19.3
@@ -141,7 +141,7 @@ termcolor==2.5.0
 threadpoolctl==3.5.0
 tifffile==2024.12.12
 tinycss2==1.4.0
-tomli==2.2.1
+tomli==2.2.1 --no-binary=:all:
 tqdm==4.67.0
 traits==6.4.3
 trio==0.27.0
