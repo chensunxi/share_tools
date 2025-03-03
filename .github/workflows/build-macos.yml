@@ -31,10 +31,17 @@ jobs:
           python -m venv venv-$ARCH
           source venv-$ARCH/bin/activate
 
-          # 安装依赖（单架构模式）
-          export ARCHFLAGS="-arch $ARCH"
+          # 安装基础工具链
           pip install --upgrade pip setuptools wheel
-          pip install pandas numpy --no-binary pandas,numpy  # 允许源码编译
+
+          # 安装 numpy 和 pandas（禁用交叉编译测试）
+          export NPY_DISABLE_SVML=1  # 禁用 SVML 优化
+          export CFLAGS="-arch $ARCH"
+          export LDFLAGS="-arch $ARCH"
+          pip install numpy --no-binary numpy  # 强制源码编译
+          pip install pandas --no-binary pandas  # 强制源码编译
+
+          # 安装其他依赖
           pip install -r requirements.txt
 
           # 构建单架构可执行文件（完整参数）
