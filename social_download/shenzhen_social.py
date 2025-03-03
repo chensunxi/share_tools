@@ -228,7 +228,7 @@ class ShenzhenSocialSecurity(CrawlerDownloadBase):
         if not os.path.exists(new_path):
             os.makedirs(new_path)
         if user_name and code:
-            file_name = f'{user_name}_{code}_{self.city}_个人参保证明'
+            file_name = f"{user_name}_{code}_{self.city}_个人参保证明"
         new_file_path = os.path.join(new_path, file_name)
         self.rename_downfile(new_file_path)
 
