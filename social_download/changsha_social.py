@@ -70,7 +70,7 @@ class ChangshaSocialSecurity(CrawlerDownloadBase):
             download_button.click()
             time.sleep(3)
 
-            new_file_name = f'{input_context['staff_name']}_{input_context['id_card']}_{self.city}_个人参保证明'
+            new_file_name = f"{input_context['staff_name']}_{input_context['id_card']}_{self.city}_个人参保证明"
             new_file_path = os.path.join(self.download_path, new_file_name)
             self.rename_downfile(new_file_path)
 
