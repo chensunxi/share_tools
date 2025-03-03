@@ -46,6 +46,8 @@ jobs:
             echo "Error: pathlib 未完全卸载，终止构建！"
             exit 1
           fi
+          pip install numpy --target-arch universal2
+          pip install pandas --target-arch universal2
 
           # 构建命令
           pyinstaller --onefile --name myapp \
@@ -65,6 +67,10 @@ jobs:
             --add-data "resources:resources" \
             share_main.py
 
+      - name: Verify binary architecture
+        run: |
+          lipo -info dist/myapp
+          
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
