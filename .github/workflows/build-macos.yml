@@ -50,8 +50,8 @@ jobs:
           # 构建命令
           pyinstaller --onefile --name myapp \
             --hidden-import selenium \
-            --add-data "venv/lib/python3.11/site-packages/selenium:selenium" \  # 手动包含 selenium 包
-            --add-binary "venv/lib/python3.11/site-packages/selenium/webdriver/common/:selenium/webdriver/common" \  # 包含驱动工具
+            --add-data "venv/lib/python3.11/site-packages/selenium:selenium" \
+            --add-binary "venv/lib/python3.11/site-packages/selenium/webdriver/common/:selenium/webdriver/common" \
             --hidden-import logging.handlers \
             --hidden-import tkinter \
             --hidden-import tkinter.filedialog \
