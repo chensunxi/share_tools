@@ -52,6 +52,7 @@ jobs:
             --target-arch universal2 \
             --hidden-import selenium \
             --hidden-import=platform \
+            --hidden-import=certifi \
             --add-data "venv/lib/python3.11/site-packages/selenium:selenium" \
             --add-binary "venv/lib/python3.11/site-packages/selenium/webdriver/common/:selenium/webdriver/common" \
             --hidden-import logging.handlers \
