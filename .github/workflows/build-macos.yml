@@ -4,7 +4,7 @@ on:
   push:
     branches: [ "main" ]
   pull_request:
-    branches: [ "main" ]
+    branches: "main"
 
 jobs:
   build:
@@ -18,33 +18,31 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Install dependencies
+      - name: Install core tools
         run: |
-          # 升级 pip 到最新版本（可选，避免警告）
-          python -m pip install --upgrade pip
-          pip install -U setuptools wheel
-          pip install pyinstaller==6.1.0
-
-          pip install -r requirements.txt
+          # 全局升级 pip 和工具链（可选）
+          python -m pip install --upgrade pip setuptools wheel
 
       - name: Build macOS executable
         run: |
-          # 卸载全局 pathlib（仅在 macOS 环境需要）
-          /Library/Frameworks/Python.framework/Versions/3.11/bin/python -m pip uninstall pathlib -y
-
-          # 创建虚拟环境
+          # 创建并激活虚拟环境
           python -m venv venv
           source venv/bin/activate
-          
-          # 在虚拟环境中强制卸载 pathlib
-          pip uninstall -y pathlib || true  # 忽略卸载失败
 
-          # 安装项目依赖（确保 requirements.txt 不含 pathlib）
-          pip install -r requirements.txt
+          # 强制卸载 pathlib（即使不存在也忽略错误）
+          pip uninstall -y pathlib || true
 
-          # 再次检查 pathlib 是否残留（调试用）
-          pip list | grep pathlib && exit 1 || echo "pathlib 已清理"
-          
+          # 安装 PyInstaller 和项目依赖（确保 requirements.txt 不含 pathlib）
+          pip install pyinstaller==6.1.0
+          pip install --no-deps -r requirements.txt  # 关键：忽略依赖中的 pathlib
+
+          # 再次检查 pathlib 是否残留
+          if pip list | grep pathlib; then
+            echo "Error: pathlib 未完全卸载，请检查 requirements.txt"
+            exit 1
+          fi
+
+          # 构建命令
           pyinstaller --onefile --name myapp \
             --hidden-import social_download \
             --hidden-import utils \
