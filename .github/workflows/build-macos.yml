@@ -1,4 +1,4 @@
-name: Build macOS Universal2 Executable
+name: Build macOS Universal Executable (Precompiled Binaries)
 
 on:
   push:
@@ -7,9 +7,6 @@ on:
 jobs:
   build:
     runs-on: macos-latest
-    strategy:
-      matrix:
-        arch: [x86_64, arm64]  # 分两个架构编译
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -21,51 +18,27 @@ jobs:
 
       - name: Clean environment
         run: |
-          rm -rf venv/
+          rm -rf dist/ build/
 
-      - name: Build per-architecture
-        env:
-          ARCH: ${{ matrix.arch }}  # 当前架构
+      - name: Install dependencies
         run: |
-          # 创建虚拟环境
-          python -m venv venv-$ARCH
-          source venv-$ARCH/bin/activate
+          # 使用预编译的二进制包（关键）
+          python -m pip install --upgrade pip setuptools wheel
+          pip install -r requirements.txt  # 确保 requirements.txt 包含 numpy, pandas, selenium 等
 
-          # 安装基础工具链
-          pip install --upgrade pip setuptools wheel
-
-          # 安装 numpy 和 pandas（禁用交叉编译测试）
-          export NPY_DISABLE_SVML=1  # 禁用 SVML 优化
-          export CFLAGS="-arch $ARCH"
-          export LDFLAGS="-arch $ARCH"
-          pip install numpy --no-binary numpy  # 强制源码编译
-          pip install pandas --no-binary pandas  # 强制源码编译
-
-          # 安装其他依赖
-          pip install -r requirements.txt
-
-          # 构建单架构可执行文件（完整参数）
+      - name: Build Universal2 executable
+        run: |
+          # 直接生成 Universal2 二进制（无需分架构）
           pyinstaller \
             --onefile \
-            --name myapp-$ARCH \
-            --target-architecture=$ARCH \
+            --name myapp-universal \
+            --target-arch universal2 \  # 关键参数
             --hidden-import=selenium \
-            --hidden-import=platform \
-            --hidden-import=certifi \
-            --hidden-import=urllib3 \
-            --hidden-import=sysconfig \
-            --hidden-import=pkgutil \
-            --hidden-import=uuid \
-            --hidden-import=websocket \
-            --hidden-import=xml.dom \
-            --hidden-import=pandas \
-            --hidden-import=pandas._libs.writers \
-            --hidden-import=logging.handlers \
             --hidden-import=tkinter \
             --hidden-import=tkinter.filedialog \
+            --hidden-import=logging.handlers \
+            --hidden-import=pandas._libs.writers \
             --collect-data=tkinter \
-            --add-data "venv-$ARCH/lib/python3.11/site-packages/selenium:selenium" \
-            --add-binary "venv-$ARCH/lib/python3.11/site-packages/selenium/webdriver/common/:selenium/webdriver/common" \
             --add-data "social_download:social_download" \
             --add-data "utils:utils" \
             --add-data "gui:gui" \
@@ -74,21 +47,11 @@ jobs:
             --add-data "resources:resources" \
             --clean \
             --noconfirm \
-            --distpath dist-$ARCH \
-            --workpath build-$ARCH \
             share_main.py
 
-      - name: Merge universal binary
-        if: matrix.arch == 'x86_64'  # 仅在最后一个任务合并
+      - name: Verify binary architecture
         run: |
-          # 合并两个架构的二进制
-          lipo -create \
-            dist-x86_64/myapp-x86_64 \
-            dist-arm64/myapp-arm64 \
-            -output dist/myapp-universal
-
-          # 验证合并结果
-          lipo -info dist/myapp-universal
+          lipo -info dist/myapp-universal  # 应输出 "x86_64 arm64"
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
