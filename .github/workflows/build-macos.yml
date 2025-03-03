@@ -16,12 +16,12 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.7"
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install pyinstaller
+          pip install pyinstaller==6.1.0
           pip install -r requirements.txt
 
       - name: Build macOS executable
@@ -32,19 +32,22 @@ jobs:
           # 创建虚拟环境
           python -m venv venv
           source venv/bin/activate
-          pyinstaller --onefile --name myapp \\
-          --hidden-import social_download \\
-          --hidden-import utils \\
-          --hidden-import gui \\
-          --hidden-import bidding_docx \\
-          --hidden-import social_desensitize \\
-          --add-data "social_download:social_download" \\
-          --add-data "utils:utils" \\
-          --add-data "gui:gui" \\
-          --add-data "bidding_docx:bidding_docx" \\
-          --add-data "social_desensitize:social_desensitize" \\
-          --add-data "resources:resources" \\
-          share_main.py
+          # 在虚拟环境中重新安装依赖
+          pip install -r requirements.txt
+          
+          pyinstaller --onefile --name myapp \
+            --hidden-import social_download \
+            --hidden-import utils \
+            --hidden-import gui \
+            --hidden-import bidding_docx \
+            --hidden-import social_desensitize \
+            --add-data "social_download:social_download" \
+            --add-data "utils:utils" \
+            --add-data "gui:gui" \
+            --add-data "bidding_docx:bidding_docx" \
+            --add-data "social_desensitize:social_desensitize" \
+            --add-data "resources:resources" \
+            share_main.py
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
