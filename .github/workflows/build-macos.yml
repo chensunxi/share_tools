@@ -20,8 +20,11 @@ jobs:
 
       - name: Install dependencies
         run: |
+          # 升级 pip 到最新版本（可选，避免警告）
           python -m pip install --upgrade pip
+          pip install -U setuptools wheel
           pip install pyinstaller==6.1.0
+
           pip install -r requirements.txt
 
       - name: Build macOS executable
@@ -32,8 +35,15 @@ jobs:
           # 创建虚拟环境
           python -m venv venv
           source venv/bin/activate
-          # 在虚拟环境中重新安装依赖
+          
+          # 在虚拟环境中强制卸载 pathlib
+          pip uninstall -y pathlib || true  # 忽略卸载失败
+
+          # 安装项目依赖（确保 requirements.txt 不含 pathlib）
           pip install -r requirements.txt
+
+          # 再次检查 pathlib 是否残留（调试用）
+          pip list | grep pathlib && exit 1 || echo "pathlib 已清理"
           
           pyinstaller --onefile --name myapp \
             --hidden-import social_download \
