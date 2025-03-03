@@ -46,7 +46,13 @@ jobs:
             echo "Error: pathlib 未完全卸载，终止构建！"
             exit 1
           fi
-          ARCHFLAGS="-arch x86_64 -arch arm64" \
+          # 删除现有二进制版本
+          pip uninstall tomli -y
+
+          # 从源码安装并强制兼容架构
+          ARCHFLAGS="-arch x86_64 -arch arm64"
+          pip install tomli --no-binary=:all:          
+          export ARCHFLAGS="-arch x86_64 -arch arm64"
           # 构建命令
           pyinstaller --onefile --name myapp \
             --target-architecture=universal2 \
